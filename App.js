@@ -9,7 +9,14 @@ import {
    View
  } from 'react-native';
 
-export default class App extends React.Component {
+import { Provider } from 'react-redux'
+import { createStore } from 'redux'
+
+import reactGithub from './app/reducers';
+
+let store = createStore(reactGithub);
+
+class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -88,3 +95,11 @@ const styles = StyleSheet.create({
     marginRight: 8
   }
 });
+
+const app = () => (
+  <Provider store={store}>
+    <App />
+  </Provider>
+);
+
+export default app;
