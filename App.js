@@ -10,26 +10,17 @@ import {
  } from 'react-native';
 
 import { connect, Provider } from 'react-redux'
-import { createStore } from 'redux'
+import { createStore, applyMiddleware } from 'redux'
+
+import thunkMiddleware from 'redux-thunk'
+import { createLogger } from 'redux-logger'
 
 import reactGithub from './app/reducers';
-import { setUsername, setRepos, requestRepos } from './app/actions';
+import { setUsername, setRepos, requestRepos, fetchRepos } from './app/actions';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-  }
-
-  async fetchRepos() {
-    try {
-      this.props.requestRepos();
-      const res = await fetch('https://api.github.com/users/' + this.props.username + '/repos');
-      const json = await res.json();
-      const repos = json.map(repo => { return {key: repo.url, name: repo.full_name} });
-      this.props.setRepos(repos);
-    } catch (e) {
-      console.warn(e);
-    }
   }
 
   render() {
@@ -55,7 +46,7 @@ class App extends React.Component {
           />
           <Button
             title="Repos"
-            onPress={this.fetchRepos.bind(this)}
+            onPress={() => this.props.fetchRepos(this.props.username)}
           />
         </View>
         {this.props.repos.isLoading ? progressBar :
@@ -89,7 +80,15 @@ const styles = StyleSheet.create({
   }
 });
 
-const store = createStore(reactGithub);
+const loggerMiddleware = createLogger();
+
+const store = createStore(
+  reactGithub,
+  applyMiddleware(
+    thunkMiddleware,
+    loggerMiddleware
+  )
+);
 
 const mapStateToProps = (state) => {
     return {
@@ -102,7 +101,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         setUsername: (username) => dispatch(setUsername(username)),
         setRepos: (id) => dispatch(setRepos(id)),
-        requestRepos: () => dispatch(requestRepos())
+        requestRepos: () => dispatch(requestRepos()),
+        fetchRepos: (username) => dispatch(fetchRepos(username))
     }
 };
 

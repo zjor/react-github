@@ -23,3 +23,19 @@ export const setRepos = (repos) => {
     repos
   }
 }
+
+export const fetchRepos = (username) => {
+  return async (dispatch) => {
+    dispatch(requestRepos())
+    try {
+      const res = await fetch('https://api.github.com/users/' + username + '/repos')
+      const json = await res.json()
+      const repos = json.map(repo => { return {key: repo.url, name: repo.full_name} })
+      dispatch(setRepos(repos))
+    } catch (e) {
+      console.log(e)
+    }
+
+  }
+
+}
