@@ -9,34 +9,32 @@ import {
    View
  } from 'react-native';
 
-import { Provider } from 'react-redux'
+import { connect, Provider } from 'react-redux'
 import { createStore } from 'redux'
 
 import reactGithub from './app/reducers';
-
-let store = createStore(reactGithub);
+import { setUsername, setRepos } from './app/actions';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: undefined,
       isLoading: false,
       repos: [{key: '1', name: 'Empty list'}]
     }
   }
 
-  onChangeText(text) {
-    this.setState({ ...this.state, username: text });
-  }
-
   async fetchRepos() {
     this.setState({ ...this.state, isLoading: true });
-
-    const res = await fetch('https://api.github.com/users/' + this.state.username + '/repos');
-    const json = await res.json();
-    const repos = json.map(repo => { return {key: repo.url, name: repo.full_name} });
-    this.setState({ ...this.state, repos: repos, isLoading: false});
+    try {
+      const res = await fetch('https://api.github.com/users/' + this.props.username + '/repos');
+      const json = await res.json();
+      const repos = json.map(repo => { return {key: repo.url, name: repo.full_name} });
+      this.props.setRepos(repos);
+      this.setState({ ...this.state, isLoading: false});
+    } catch (e) {
+      this.setState({ ...this.state, repos: [{key: '1', name: e.toString()}], isLoading: false });
+    }
   }
 
   render() {
@@ -58,8 +56,8 @@ class App extends React.Component {
           <TextInput
             style={styles.search}
             placeholder="Type user's name here"
-            onChangeText={this.onChangeText.bind(this)}
-          />
+            onChangeText={(text) => this.props.setUsername(text)}
+          />          
           <Button
             title="Repos"
             onPress={this.fetchRepos.bind(this)}
@@ -68,7 +66,7 @@ class App extends React.Component {
         {this.state.isLoading ? progressBar :
           <FlatList
             style={{width: '100%'}}
-            data={this.state.repos}
+            data={this.props.repos}
             renderItem={listItem}
           />
         }
@@ -96,9 +94,27 @@ const styles = StyleSheet.create({
   }
 });
 
+const store = createStore(reactGithub);
+
+const mapStateToProps = (state) => {
+    return {
+        username: state.username,
+        repos: state.repos
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        setUsername: (username) => dispatch(setUsername(username)),
+        setRepos: (id) => dispatch(setRepos(id))
+    }
+};
+
+const ReduxApp = connect(mapStateToProps, mapDispatchToProps)(App);
+
 const app = () => (
   <Provider store={store}>
-    <App />
+    <ReduxApp />
   </Provider>
 );
 
