@@ -13,27 +13,22 @@ import { connect, Provider } from 'react-redux'
 import { createStore } from 'redux'
 
 import reactGithub from './app/reducers';
-import { setUsername, setRepos } from './app/actions';
+import { setUsername, setRepos, requestRepos } from './app/actions';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      isLoading: false,
-      repos: [{key: '1', name: 'Empty list'}]
-    }
   }
 
   async fetchRepos() {
-    this.setState({ ...this.state, isLoading: true });
     try {
+      this.props.requestRepos();
       const res = await fetch('https://api.github.com/users/' + this.props.username + '/repos');
       const json = await res.json();
       const repos = json.map(repo => { return {key: repo.url, name: repo.full_name} });
       this.props.setRepos(repos);
-      this.setState({ ...this.state, isLoading: false});
     } catch (e) {
-      this.setState({ ...this.state, repos: [{key: '1', name: e.toString()}], isLoading: false });
+      console.warn(e);
     }
   }
 
@@ -57,16 +52,16 @@ class App extends React.Component {
             style={styles.search}
             placeholder="Type user's name here"
             onChangeText={(text) => this.props.setUsername(text)}
-          />          
+          />
           <Button
             title="Repos"
             onPress={this.fetchRepos.bind(this)}
           />
         </View>
-        {this.state.isLoading ? progressBar :
+        {this.props.repos.isLoading ? progressBar :
           <FlatList
             style={{width: '100%'}}
-            data={this.props.repos}
+            data={this.props.repos.items}
             renderItem={listItem}
           />
         }
@@ -106,7 +101,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         setUsername: (username) => dispatch(setUsername(username)),
-        setRepos: (id) => dispatch(setRepos(id))
+        setRepos: (id) => dispatch(setRepos(id)),
+        requestRepos: () => dispatch(requestRepos())
     }
 };
 
