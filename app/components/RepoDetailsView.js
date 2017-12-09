@@ -6,10 +6,15 @@ import {
   } from 'react-native'
 
 class RepoDetailsView extends React.Component {
+
+  static navigationOptions = ({ navigation }) => ({
+    title: `${navigation.state.params.repo.name}`,
+  });
+
   render() {
     return (
       <View style={styles.view}>
-        <Text> I'm details</Text>
+        <Text>{JSON.stringify(this.props.navigation.state.params.repo)}</Text>
       </View>
     )
   }

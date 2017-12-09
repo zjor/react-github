@@ -17,6 +17,11 @@ class ReactGithubApp extends React.Component {
     console.log('ReactGithubApp.constructor: ', this.props)
   }
 
+  onPressItem(item) {
+    const { navigate } = this.props.navigation;
+    navigate('Details', {repo: item})
+  }
+
   render() {
     console.log('ReactGithubApp.render: ', this.props)
     const progressBar = (
@@ -26,7 +31,11 @@ class ReactGithubApp extends React.Component {
     );
 
     const listItem = ({ item }) => (
-      <RepoListItem item={item} navigation={this.props.navigation} />
+      <RepoListItem
+        item={item}
+        navigation={this.props.navigation}
+        onPressItem={this.onPressItem.bind(this)}
+      />
     )
 
     return (
@@ -60,8 +69,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 8,
-    marginTop: Expo.Constants.statusBarHeight
+    padding: 8
   },
   searchBar: {
     flexDirection: 'row',

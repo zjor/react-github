@@ -5,24 +5,22 @@ import {
   Text,
   TouchableOpacity } from 'react-native'
 
-class RepoListItem extends React.Component {
+class RepoListItem extends React.PureComponent {
 
   constructor(props) {
     super(props)
   }
 
   onPress() {
-    this.props.navigation.navigate('Details')
+    this.props.onPressItem(this.props.item)
   }
 
   render() {
-    console.log(this.props)
     return (
       <View>
         <TouchableOpacity
           style={styles.listItem}
-          onPress={this.onPress.bind(this)}
-          >
+          onPress={this.onPress.bind(this)}>
           <Text>{this.props.item.name}</Text>
         </TouchableOpacity>
       </View>

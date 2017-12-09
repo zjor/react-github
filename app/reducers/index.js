@@ -1,12 +1,10 @@
-import { combineReducers } from 'redux'
-
 import {
   SET_USERNAME,
   REQUEST_REPOS,
   SET_REPOS
 } from '../actions'
 
-const repos = (state = {
+export const reposReducer = (state = {
   isLoading: false,
   items: [{key: '1', name: 'Empty list'}]
 }, action) => {
@@ -26,7 +24,7 @@ const repos = (state = {
   }
 }
 
-const username = (state = "", action) => {
+export const usernameReducer = (state = "", action) => {
   switch (action.type) {
     case SET_USERNAME:
       return action.username
@@ -34,10 +32,3 @@ const username = (state = "", action) => {
       return state
   }
 }
-
-const rootReducer = combineReducers({
-  repos,
-  username
-})
-
-export default rootReducer
