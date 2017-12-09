@@ -35,9 +35,9 @@ const username = (state = "", action) => {
   }
 }
 
-const reactGithub = combineReducers({
+const rootReducer = combineReducers({
   repos,
   username
 })
 
-export default reactGithub
+export default rootReducer
