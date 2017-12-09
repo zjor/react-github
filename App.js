@@ -6,7 +6,11 @@ import { createStore, applyMiddleware } from 'redux'
 import thunkMiddleware from 'redux-thunk'
 import { createLogger } from 'redux-logger'
 
-import ReactGithub from './app/components/ReactGithub'
+import { StackNavigator } from 'react-navigation';
+
+import ReactGithubApp from './app/components/ReactGithubApp'
+import RepoDetailsView from './app/components/RepoDetailsView'
+
 import rootReducer from './app/reducers'
 import { setUsername, setRepos, requestRepos, fetchRepos } from './app/actions'
 
@@ -36,11 +40,20 @@ const mapDispatchToProps = (dispatch) => {
     }
 };
 
-const App = connect(mapStateToProps, mapDispatchToProps)(ReactGithub);
+const App = connect(mapStateToProps, mapDispatchToProps)(ReactGithubApp);
+
+const RootNavigator = StackNavigator({
+  Home: {
+    screen: App
+  },
+  Details: {
+    screen: RepoDetailsView
+  }
+})
 
 const app = () => (
   <Provider store={store}>
-    <App />
+    <RootNavigator />
   </Provider>
 );
 

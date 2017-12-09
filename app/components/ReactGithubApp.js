@@ -9,12 +9,16 @@ import {
    View
  } from 'react-native';
 
+import RepoListItem from './RepoListItem';
+
 class ReactGithubApp extends React.Component {
   constructor(props) {
     super(props);
+    console.log('ReactGithubApp.constructor: ', this.props)
   }
 
   render() {
+    console.log('ReactGithubApp.render: ', this.props)
     const progressBar = (
       <View style={{flex: 1}}>
         <ProgressBarAndroid styleAttr="Large" />
@@ -22,10 +26,8 @@ class ReactGithubApp extends React.Component {
     );
 
     const listItem = ({ item }) => (
-      <View>
-        <Text>{item.name}</Text>
-      </View>
-    );
+      <RepoListItem item={item} navigation={this.props.navigation} />
+    )
 
     return (
       <View style={styles.container}>
@@ -44,7 +46,7 @@ class ReactGithubApp extends React.Component {
           <FlatList
             style={{width: '100%'}}
             data={this.props.repos.items}
-            renderItem={listItem}
+            renderItem={listItem.bind(this)}
           />
         }
       </View>
